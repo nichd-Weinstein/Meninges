@@ -1,3 +1,12 @@
+library(Seurat)
+library(patchwork)
+library(ggplot2)
+library(RColorBrewer)
+library(viridis)
+library(DT)
+library(dplyr)
+library(SeuratObject)
+
 ###Dura
 DM16 <- readRDS("../input/DM1-6.rds")
 
