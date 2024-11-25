@@ -8,7 +8,7 @@ library(dplyr)
 library(SeuratObject)
 
 ###Leptomeninges
-combinedLP <- readRDS("/Users/kentonmi/Desktop/SingleCell/Marina/2024_manuscriptprep/combined_LP_Seurat_object_subset.rds")
+combinedLP <- readRDS("../input/combined_LP_Seurat_object_subset.rds")
 
 combinedLP <- FindNeighbors(combinedLP, reduction = "pca", dims = 1:30)
 combinedLP <- FindClusters(combinedLP, resolution = 0.8, verbose=T)
@@ -93,8 +93,8 @@ markers <- FindAllMarkers(combinedLP, only.pos=T, min.pct=0.25, logfc.threshold=
 combinedLP_RNA <- combinedLP
 DefaultAssay(combinedLP_RNA) <- "RNA"
 
-saveRDS(combinedLP, file="/Users/kentonmi/Desktop/SingleCell/Marina/2024_manuscriptprep/LeptoWithSplit8.rds")
-combinedLP <- readRDS("/Users/kentonmi/Desktop/SingleCell/Marina/2024_manuscriptprep/LeptoWithSplit8.rds")
+saveRDS(combinedLP, file="../output/LeptoFinal.rds")
+combinedLP <- readRDS("../output/LeptoFinal.rds")
 
 DimPlot(combinedLP, reduction = "umap", label = TRUE, pt.size = 0.07) + scale_color_manual(values = c("#5E5ED1", "#4EAAC6", "#C449AD", "#4B80E0", "#CF7DE2", "#6ACC2B", "#50C5D8", "#EDCE4F", "#A963DB", "#D8514E", "#5BD3B6", "#EAAD49", "#E5E565", "#A7DB45", "#7E59D1", "#5FC187", "#E57645", "#84244B"))
 
@@ -175,7 +175,7 @@ Lepto + theme(axis.text.x = element_text(size = 12, angle = 90),
 
 
 ###Dura
-DM16 <- readRDS("/Users/kentonmi/Desktop/SingleCell/Aurora/combined_DM1-6_Seurat_object_subset.rds")
+DM16 <- readRDS("../input/DM1-6.rds")
 
 DM16 <- FindNeighbors(DM16, reduction = "pca", dims = 1:30)
 DM16 <- FindClusters(DM16, resolution = 0.9, verbose=T)
@@ -228,15 +228,14 @@ new.cluster.ids <- c("4", "2", "0", "13.0", "1", "1", "1","17", "0", "19", "1", 
 names(new.cluster.ids) <- levels(DM16_RNA)
 DM16_RNA <- RenameIdents(DM16_RNA, new.cluster.ids)
 DimPlot(DM16_RNA, reduction = "umap", label = TRUE, pt.size = 0.07)
-
 markers <- FindAllMarkers(DM16_RNA, only.pos=T, min.pct=0.25, logfc.threshold=0.25, assay='RNA')
 clustered_markers <- markers %>% group_by(cluster)
 topN_markers <- clustered_markers %>% top_n(n = 30, wt = avg_log2FC)
-write.table(clustered_markers, file="~/Desktop/SingleCell/Marina/2024_manuscriptprep/Markers_Dura_Final.tsv", sep="\t", quote=FALSE)
+write.table(clustered_markers, file="../output/Markers_Dura_Final.tsv", sep="\t", quote=FALSE)
 cat('\n\n\n#### transgenes \n\n\n')
 
-saveRDS(DM16_RNA, file="/Users/kentonmi/Desktop/SingleCell/Marina/2024_manuscriptprep/DuraWithSplitCs.rds")
-DM16_RNA <- readRDS("/Users/kentonmi/Desktop/SingleCell/Marina/2024_manuscriptprep/DuraWithSplitCs.rds")
+saveRDS(DM16_RNA, file="../output/DuraFinal.rds")
+DM16_RNA <- readRDS("../output/DuraFinal.rds")
 
 subsetImmune <- subset(x = DM16_RNA, idents = c("0","19","9","15.0"), invert = FALSE)
 subsetImmune <- FindVariableFeatures(subsetImmune, selection.method = "vst", nfeatures = 2000)
