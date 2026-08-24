@@ -91,9 +91,6 @@ plotSmoothFitMultiCascade(smoothed.fit = splines, genes = genes.plot, scaled = T
                           alpha.data = 0.2, alpha.smooth = 1, 
                           colors = c("Progenitors" = "#17A589", "LM" = "#FF0000", "mFB" = "#0065FF"))
 
-saveRDS(splines, file = "~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/cascades/splines_EPD_mFB_Progenitors_combined.rds")
-splines <- readRDS("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/cascades/splines_EPD_mFB_Progenitors_combined.rds")
-
 ##Now find TFs that are commonly expressed between the EPDs and mFBs or in Progenitors
 ##Load TF list
 tf.list <- read.delim(file="~/Box/zfext/02-Clustering/2021-03 Iterative Clustering/gene_info/tfs/2021-06-25_zebrafish_LTA_TFs.txt", header = T, sep = "")
@@ -119,13 +116,11 @@ epd.tf.list <- c("foxc1a", "foxc1b", "foxd1", "foxf2a", "foxl2a", "klf2a", "msx1
 
 fb.tf.list <- c("bhlhe41", "bhlhe40", "cebpd", "pbx1b", "stat5a", "tfe3a", "ebf2", "klf15", "tbx15", "zic2a")
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/plots/meninges_LM_mFB_splines_selectTFs.pdf", width = 8, height = 8)
 plotSmoothFitMultiCascade(smoothed.fit = splines, genes = c("foxl2a", "zeb2b", "six1a", "klf2a", "klf15", "bhlhe40", "sox9a"), scaled = T, 
                           alpha.data = 0.2, alpha.smooth = 1, 
                           colors = c("Progenitors" = "black", "mFB" = "#fb75b1", "LM" = "#17A589"))
 dev.off()
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/plots/meninges_LM_mFB_impulse_progenitor_plots.pdf", width = 20, height = 20)
 plotSmoothFitMultiCascade(smoothed.fit = splines, genes = unlist(unique(list(fb.tf.list, epd.tf.list))), scaled = T, 
                           alpha.data = 0.2, alpha.smooth = 2, 
                           colors = c("Progenitors" = "#17A589", "LM" = "#FF0000", "mFB" = "#0065FF"), ncol = 5)
