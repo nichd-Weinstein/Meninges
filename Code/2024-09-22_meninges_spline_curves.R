@@ -93,7 +93,7 @@ plotSmoothFitMultiCascade(smoothed.fit = splines, genes = genes.plot, scaled = T
 
 ##Now find TFs that are commonly expressed between the EPDs and mFBs or in Progenitors
 ##Load TF list
-tf.list <- read.delim(file="~/Box/zfext/02-Clustering/2021-03 Iterative Clustering/gene_info/tfs/2021-06-25_zebrafish_LTA_TFs.txt", header = T, sep = "")
+tf.list <- read.delim(file="~/file_avail_upon_request/2021-06-25_zebrafish_LTA_TFs.txt", header = T, sep = "")
 
 ##TFs expressed in EPDs
 ##Which LM specific markers are TFs?
