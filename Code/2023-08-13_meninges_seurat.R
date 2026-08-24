@@ -10,10 +10,10 @@ library(dplyr)
 ############### FIGURE 7A ####################
 ##Load mama
 message(paste0(Sys.time(), ": Loading mama"))
-mama <- readRDS("~/Box/zfext/02-Clustering/mama+ds_integrated/merged_mama_ds_slim_seurat_25Jan2022.rds")
+mama <- readRDS("~/file_avail_upon_request/merged_mama_ds_slim_seurat_25Jan2022.rds")
 
 # Load cell annotations to introduce for downsample purposes
-cell.annot.path <- "~/Box/zfext/annotations_celltype_curated_newMama/celltype_annotations_df.tsv"
+cell.annot.path <- "~/file_avail_upon_request/celltype_annotations_df.tsv"
 message(Sys.time(), ": Loading ", cell.annot.path)
 cell.annot <- read.table(cell.annot.path, sep = " ", header = T, stringsAsFactors = F)
 cell.annot$tissue <- unlist(lapply(strsplit(x = cell.annot$clust, split = "\\."), function(x) x[1]))
@@ -68,7 +68,7 @@ for (i in seq_along(groups_to_overlay)) {
 ########### FIGURE 7B #################
 ##Now load mesenchyme object
 sample <- "mesenchyme"
-obj <- readRDS(paste0(file = "~/Box/zfext/annotations_celltype_curated_newMama/", sample, "/obj_seurat/", sample, "_seurat.rds"))
+obj <- readRDS(paste0(file = "~/file_avail_upon_request/", sample, "/obj_seurat/", sample, "_seurat.rds"))
 
 ##Highlight the meninges cells in the mesenchyme object
 ##Make a slot in the meninges object for these cells - including the rest of non-meningeal cells in the mesenchyme
@@ -334,7 +334,7 @@ plotCellInfoBar <- function(seurat.object, plot.meta, clust, clustering = "clust
 }
 
 ##Load cell cycle scores
-cc.score <- readRDS("~/Box/zfext/02-Clustering/mama+ds_integrated/merged_mama_cellCycle_score.rds")
+cc.score <- readRDS("~/file_avail_upon_request/merged_mama_cellCycle_score.rds")
 mama@meta.data <- cbind(mama@meta.data, cc.score)
 
 ##Find which cells belong to G1/S phase and which belong to G2/M phase
