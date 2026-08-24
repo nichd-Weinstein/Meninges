@@ -64,17 +64,6 @@ for (i in seq_along(groups_to_overlay)) {
           panel.background = element_rect(fill = "white"))  # Set white background
 }
 
-# Print the plot
-dpi <- 300
-png("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/mama_meninges_cells_highlighted_v4.png", height = 5*dpi, width = 5*dpi)
-p
-dev.off()
-
-dpi <- 300
-png("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/mama_meninges_cells_highlighted_v2.png", height = 5*dpi, width = 5*dpi)
-DimPlot(mama, group.by = "meninges.clusters", cols = colors.meninges, pt.size = 2, raster = F, na.value = "grey75", order = T) + NoAxes() + NoLegend()
-dev.off()
-
 
 ########### FIGURE 7B #################
 ##Now load mesenchyme object
@@ -90,7 +79,6 @@ obj@meta.data[WhichCells(obj, idents = c("32")), "meninges.clusters"] <- "mening
 
 
 dpi <- 300
-png("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/mesenchyme_obj_meninges_cells_highlighted.png", height = 5*dpi, width = 5*dpi)
 DimPlot(obj, group.by = "meninges.clusters", cols = colors.meninges, pt.size = 2, raster = F, na.value = "grey75") + NoAxes() + NoLegend()
 dev.off()
 
@@ -122,14 +110,12 @@ genes.to.plot <- c("prrx1b", "col6a1", "col6a2", "mab21l2", "meis1b", "slc4a7", 
 Idents(obj) <- factor(x = Idents(obj), levels = c("meninges precursors", "leptomeninges", "meningeal fibroblasts", "mesenchyme_rest"))
 
 ##Plot Dotplot
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/meninges_comparisons_dotplot_all_v2.pdf", width = 12, height = 18)
 DotPlot(obj, features = unique(genes.to.plot), dot.scale = 16, scale = F) + coord_flip() +
   geom_point(aes(size=pct.exp), shape = 21, colour="black", stroke=0.5) +
   scale_color_gradientn(colours = defaultURDContinuousColors(with.grey = TRUE, evenly.spaced = TRUE)) +
   guides(size=guide_legend(override.aes=list(shape=21, colour="black", fill="white")))
 dev.off()
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/meninges_comparisons_dotplot_v1.pdf", width = 12, height = 18)
 DotPlot(obj, features = c("igfbp2a", "fabp11a", "fxyd1", "tfr1a", "slc16a9a", "slc16a5b", "slc5a6a",
                           "slc4a7", "slc47a2.1", "vtnb", "cp", "c4", "slc13a4", "ggctb", "epd", "ctsla", "ppdpfb"), dot.scale = 16, scale = F) + coord_flip() +
   geom_point(aes(size=pct.exp), shape = 21, colour="black", stroke=0.5) +
@@ -161,9 +147,9 @@ markers.mf <- markers[markers$cluster == "meningeal fibroblasts" & markers$pct.1
 markers.shared <- markers[markers$cluster == "meningeal fibroblasts" & markers$pct.1 - markers$pct.2 <= 0.1, ]
 
 ##Save the marker lists
-write.csv(markers.lm, "~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/gene_lists/EPD_markers_df_pct_diff_0.4_seurat.csv")
-write.csv(markers.mf, "~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/gene_lists/fibroblasts_markers_df_pct_diff_0.4_seurat.csv")
-write.csv(markers.shared, "~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/gene_lists/shared_markers_df_pct_diff_0.1.csv")
+write.csv(markers.lm, "XXX/EPD_markers_df_pct_diff_0.4_seurat.csv")
+write.csv(markers.mf, "XXX/fibroblasts_markers_df_pct_diff_0.4_seurat.csv")
+write.csv(markers.shared, "XXX/shared_markers_df_pct_diff_0.1.csv")
 
 genes.shared <- c("sparc", "ctsla", "ppdpfb", "igfbp2a", "msx1b", "hexb", "zic2a", "fzd7b")
 
@@ -171,7 +157,6 @@ genes.shared <- c("sparc", "ctsla", "ppdpfb", "igfbp2a", "msx1b", "hexb", "zic2a
 genes.to.plot <- unlist(unique(list(markers.lm, markers.mf, genes.shared)))
 
 ##Plot Dotplot
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/meninges_comparisons_dotplot_v5_new_colors.pdf", width = 12, height = 14)
 DotPlot(obj.meninges, features = c("tfr1a", "slc16a9a", "slc16a5b", "slc5a6a",
                                     "slc4a7", "slc47a2.1", "vtnb", "cp", "c4", "slc13a4", "ggctb", "epd", 
                                    "igfbp2a", "zic2a", "fabp11a", "fxyd1", "ctsla", "ppdpfb"), dot.scale = 18, scale = F) + coord_flip() +
@@ -180,7 +165,6 @@ DotPlot(obj.meninges, features = c("tfr1a", "slc16a9a", "slc16a5b", "slc5a6a",
   guides(size=guide_legend(override.aes=list(shape=21, colour="black", fill="white")))
 dev.off()
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/meninges_comparisons_dotplot_v6_new_colors.pdf", width = 12, height = 14)
 DotPlot(obj.meninges, features = c("tfr1a", "slc16a9a", "slc16a5b", "slc5a6a",
                                    "slc4a7", "slc47a2.1", "vtnb", "cp", "c4", "slc13a4", "ggctb", "epd", 
                                    "igfbp2a", "zic2a", "fabp11a", "fxyd1", "ctsla", "ppdpfb"), dot.scale = 18, scale = F) + coord_flip() +
@@ -191,7 +175,6 @@ dev.off()
 
 
 ##Plot another dotplot for the adult genes that Marina sent
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/meninges_leptomeninges_fibroblasts_comparisons_dotplot_v3_new_colors.pdf", width = 12, height = 24)
 DotPlot(obj.meninges, features = c("cygb1", "col1a1a", "col1a1b", "zgc:158423", "cldn11a", "wu:fj16a03", "rbp4", "prodha", "slc5a6a", "vtnb", "XLOC-018373", "slc13a4", "slc22a7b.1", "nlgn2b", "si:dkey-166k12.1", 
                                    "slc15a2", "b3gnt7", "col18a1a", "col18a1b", "sat1a.1", "clu", "slc4a4a", "si:ch211-195b13.1", 
                                    "slc6a9", "soul5", "ppdpfa", "f3a", "slc38a4", "slc6a22.1", "ca4a", "ggctb", "epd", "aldh1a2", "ngfrb", "cldn11b", "prrx1b", "plat", 
@@ -203,7 +186,6 @@ DotPlot(obj.meninges, features = c("cygb1", "col1a1a", "col1a1b", "zgc:158423", 
   guides(size=guide_legend(override.aes=list(shape=21, colour="black", fill="white")))
 dev.off()
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/meninges_leptomeninges_fibroblasts_comparisons_dotplot_v4_new_colors.pdf", width = 12, height = 24)
 DotPlot(obj.meninges, features = c("cygb1", "col1a1a", "col1a1b", "zgc:158423", "cldn11a", "wu:fj16a03", "rbp4", "prodha", "slc5a6a", "vtnb", "XLOC-018373", "slc13a4", "slc22a7b.1", "nlgn2b", "si:dkey-166k12.1", 
                                    "slc15a2", "b3gnt7", "col18a1a", "col18a1b", "sat1a.1", "clu", "slc4a4a", "si:ch211-195b13.1", 
                                    "slc6a9", "soul5", "ppdpfa", "f3a", "slc38a4", "slc6a22.1", "ca4a", "ggctb", "epd", "aldh1a2", "ngfrb", "cldn11b", "prrx1b", "plat", 
@@ -296,15 +278,12 @@ plot(plotCellSizeBar(mama, "mese.21", "clust", "stage.group"))
 plot(plotCellSizeBar(mama, "mese.29", "clust", "stage.group"))
 plot(plotCellSizeBar(mama, "mese.32", "clust", "stage.group"))
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/mese-21_normalized_cellcounts_per_cluster.pdf", width = 4, height = 3)
 plot(plotCellSizeBar(mama, "mese.21", "clust", "stage.group"))
 dev.off()
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/mese-29_normalized_cellcounts_per_cluster.pdf", width = 4, height = 3)
 plot(plotCellSizeBar(mama, "mese.29", "clust", "stage.group"))
 dev.off()
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/mese-32_normalized_cellcounts_per_cluster.pdf", width = 4, height = 3)
 plot(plotCellSizeBar(mama, "mese.32", "clust", "stage.group"))
 dev.off()
 
@@ -393,7 +372,6 @@ mama@meta.data[cells.cycling.total, "cc.status"] <- "cycling"
 ##Add non-cycling cells to the "cc.phase" column
 mama@meta.data[cells.non.cycling, "cc.phase"] <- "non-cycling"
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/figure_panels/2024-09_panel_edits/mese-32_cellcycle_per_cluster.pdf", width = 4, height = 3)
 plot(plotCellInfoBar(seurat.object = mama, plot.meta = "cc.status", clust = "mese.32", legend = F, colors = colors.cellcycle, normalized = F, ylab = "Number of cells"))
 dev.off()
 
