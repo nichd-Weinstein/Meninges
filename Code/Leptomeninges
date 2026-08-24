@@ -6,9 +6,90 @@ library(viridis)
 library(DT)
 library(dplyr)
 library(SeuratObject)
+library(SingleCellExperiment)
+library(scDblFinder)
 
-###Leptomeninges
-combinedLP <- readRDS("../input/combined_LP_Seurat_object_subset.rds")
+nFeature_min=200
+nFeature_max=5000
+percent.mito_max=10
+lambda=c(LP2=27500, LP3=27500, LP4=27500, LP5=27500)/1e5
+
+data <- Read10X(
+  data.dir=c(
+    LP2="/Users/.../filtered_feature_bc_matrix",
+    LP3="/Users/.../filtered_feature_bc_matrix",
+    LP4="/Users/.../filtered_feature_bc_matrix",
+    LP5="/Users/.../filtered_feature_bc_matrix"
+  ),
+  strip.suffix=T
+)
+
+
+L <- CreateSeuratObject(counts=data, min.cells=0, project="10X_lepto")
+knitr::kable(table(Sample=L$orig.ident), caption='Original cell counts')
+
+# Call doublets/multiplets
+L$scDblFinder.score=NA
+L$scDblFinder.class=NA
+#WT = subset(M, orig.ident=='WT')
+doubletRate = (1-lambda/(exp(lambda)-1))/2 # take half Poisson rate of multiplets, because homotypic ones are ~undetectable
+for(oi in unique(L$orig.ident)) {
+  stopifnot(oi %in% names(doubletRate))
+  
+  i = which(L$orig.ident == oi)
+  obj = L[,i]
+  
+  # scDblFinder with default parameters:
+  if(packageVersion('Seurat') >= '5.0.0') {
+    sce <- SingleCellExperiment( list(counts=obj[["RNA"]]$counts) )
+  } else {
+    sce <- SingleCellExperiment( list(counts=obj@assays$RNA@counts) ) # or obj[["RNA"]]@counts
+  }
+  sce <- scDblFinder(sce, dbr=doubletRate[oi], verbose=T)
+  #hist(colData(sce)$scDblFinder.score)
+  stopifnot(identical(rownames(colData(sce)),rownames(obj@meta.data)))
+  #obj@meta.data = cbind(obj@meta.data, colData(sce)[c('scDblFinder.score','scDblFinder.class')])
+  L$scDblFinder.score[i] = colData(sce)$scDblFinder.score
+  L$scDblFinder.class[i] = as.character(colData(sce)$scDblFinder.class)
+}
+rm(obj, sce, i, oi)
+
+knitr::kable(table(L$orig.ident, L$scDblFinder.class, useNA='ifany'), caption='After scDblFinder')
+
+# remove called doublets
+stopifnot(setequal(c('doublet','singlet'), unique(M$scDblFinder.class)))
+L = subset(L, scDblFinder.class == 'singlet')
+knitr::kable(table(Sample=L$orig.ident), caption='Cell counts after called doublet removal')
+
+#grep('^mt-',rownames(M),value=T,ignore.case=T)
+M[["percent.mito"]] <- PercentageFeatureSet(L, pattern = "^mt-")
+#summary(L$percent.mito)
+
+#grep('^rpl',rownames(L),value=T,ignore.case=T)
+L[["percent.rpl"]] <- PercentageFeatureSet(L, pattern = "^rpl")
+#summary(L$percent.rpl)
+
+
+VlnPlot(object= L, features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.rpl"), ncol=2, log=T, pt.size=0.05)
+
+p1 = FeatureScatter(object = L, feature1= "nCount_RNA", feature2 = "nFeature_RNA")
+p2 = FeatureScatter(object = L, feature1= "nCount_RNA", feature2= "percent.mito")
+p1 + p2
+
+
+L <- subset(x = L, subset = nFeature_RNA > nFeature_min & nFeature_RNA < nFeature_max & percent.mito < percent.mito_max)
+
+knitr::kable(table(Sample=L$orig.ident))
+
+L <- NormalizeData(object = L, normalization.method = "LogNormalize")
+L <- FindVariableFeatures(object=L, selection.method = 'vst')
+L <- ScaleData(object = L, vars.to.regress = c("nCount_RNA", "percent.mito", "percent.rpl"))
+L <- RunPCA(object = L, features = VariableFeatures(object = L), verbose = FALSE)
+L <- RunUMAP(object = L, dims=1:30, reduction = "pca", reduction.name = "umap.unintegrated")
+
+DimPlot(object = L)
+
+combinedLP <- L
 
 combinedLP <- FindNeighbors(combinedLP, reduction = "pca", dims = 1:30)
 combinedLP <- FindClusters(combinedLP, resolution = 0.8, verbose=T)
