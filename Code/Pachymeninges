@@ -7,8 +7,69 @@ library(DT)
 library(dplyr)
 library(SeuratObject)
 
-###Dura
-DM16 <- readRDS("../input/DM1-6.rds")
+DM16 <- CreateSeuratObject(counts=data, min.cells=0, project="10X_lepto")
+knitr::kable(table(Sample=DM16$orig.ident), caption='Original cell counts')
+
+# Call doublets/multiplets
+DM16$scDblFinder.score=NA
+DM16$scDblFinder.class=NA
+#WT = subset(M, orig.ident=='WT')
+doubletRate = (1-lambda/(exp(lambda)-1))/2 # take half Poisson rate of multiplets, because homotypic ones are ~undetectable
+for(oi in unique(DM16$orig.ident)) {
+  stopifnot(oi %in% names(doubletRate))
+  
+  i = which(DM16$orig.ident == oi)
+  obj = DM16[,i]
+  
+  # scDblFinder with default parameters:
+  if(packageVersion('Seurat') >= '5.0.0') {
+    sce <- SingleCellExperiment( list(counts=obj[["RNA"]]$counts) )
+  } else {
+    sce <- SingleCellExperiment( list(counts=obj@assays$RNA@counts) ) # or obj[["RNA"]]@counts
+  }
+  sce <- scDblFinder(sce, dbr=doubletRate[oi], verbose=T)
+  #hist(colData(sce)$scDblFinder.score)
+  stopifnot(identical(rownames(colData(sce)),rownames(obj@meta.data)))
+  #obj@meta.data = cbind(obj@meta.data, colData(sce)[c('scDblFinder.score','scDblFinder.class')])
+  DM16$scDblFinder.score[i] = colData(sce)$scDblFinder.score
+  DM16$scDblFinder.class[i] = as.character(colData(sce)$scDblFinder.class)
+}
+rm(obj, sce, i, oi)
+
+knitr::kable(table(DM16$orig.ident, DM16$scDblFinder.class, useNA='ifany'), caption='After scDblFinder')
+
+# remove called doublets
+stopifnot(setequal(c('doublet','singlet'), unique(M$scDblFinder.class)))
+DM16 = subset(DM16, scDblFinder.class == 'singlet')
+knitr::kable(table(Sample=DM16$orig.ident), caption='Cell counts after called doublet removal')
+
+#grep('^mt-',rownames(M),value=T,ignore.case=T)
+M[["percent.mito"]] <- PercentageFeatureSet(DM16, pattern = "^mt-")
+#summary(DM16$percent.mito)
+
+#grep('^rpl',rownames(DM16),value=T,ignore.case=T)
+DM16[["percent.rpl"]] <- PercentageFeatureSet(DM16, pattern = "^rpl")
+#summary(DM16$percent.rpl)
+
+
+VlnPlot(object= DM16, features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.rpl"), ncol=2, log=T, pt.size=0.05)
+
+p1 = FeatureScatter(object = DM16, feature1= "nCount_RNA", feature2 = "nFeature_RNA")
+p2 = FeatureScatter(object = DM16, feature1= "nCount_RNA", feature2= "percent.mito")
+p1 + p2
+
+
+DM16 <- subset(x = DM16, subset = nFeature_RNA > nFeature_min & nFeature_RNA < nFeature_max & percent.mito < percent.mito_max)
+
+knitr::kable(table(Sample=DM16$orig.ident))
+
+DM16 <- NormalizeData(object = DM16, normalization.method = "LogNormalize")
+DM16 <- FindVariableFeatures(object=DM16, selection.method = 'vst')
+DM16 <- ScaleData(object = DM16, vars.to.regress = c("nCount_RNA", "percent.mito", "percent.rpl"))
+DM16 <- RunPCA(object = DM16, features = VariableFeatures(object = DM16), verbose = FALSE)
+DM16 <- RunUMAP(object = DM16, dims=1:30, reduction = "pca", reduction.name = "umap.unintegrated")
+
+DimPlot(object = DM16)
 
 DM16 <- FindNeighbors(DM16, reduction = "pca", dims = 1:30)
 DM16 <- FindClusters(DM16, resolution = 0.9, verbose=T)
