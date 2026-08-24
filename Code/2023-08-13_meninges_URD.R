@@ -7,8 +7,8 @@ library(URD)
 
 sample = "meninges"
 
-save.path <- "~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/obj/"
-plot.path <- "~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/plots/"
+save.path <- "~/XXX/obj/"
+plot.path <- "~/XXX/plots/"
 
 ##Load endoderm object
 obj1 <- readRDS(paste0(file = "~/Box/zfext/annotations_celltype_curated_newMama/", sample, "/obj_seurat/", sample, "_seurat.rds"))
@@ -652,10 +652,8 @@ gene.cascades <- lapply(tips.to.run, function(tip) {
   return(casc)
 })
 names(gene.cascades) <- tips.to.run
-saveRDS(gene.cascades, file = "~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/cascades/cascades_EPD_mFB_TFs.rds")
 
 plots_per_page <- 9
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/plots/meninges_LM_mFB_impulse_TFs_plots.pdf", width = 12, height = 12)
 # Loop through the genes and create plots, 9 per page
 for (i in seq(1, length(genes.plot), by = plots_per_page)) {
   
@@ -687,7 +685,6 @@ impulse.plots <- lapply(markers.prog.tfs, function(gene) plotSmoothFitMultiCasca
                                                                                    genes = gene, scaled = T, 
                                                                                    alpha.data = 0.2, alpha.smooth = 1, ncol = 3))
 
-pdf("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/plots/meninges_LM_mFB_impulse_progenitor_plots.pdf", width = 20, height = 20)
 gridExtra::grid.arrange(grobs = impulse.plots, ncol = 3)
 dev.off()
 
