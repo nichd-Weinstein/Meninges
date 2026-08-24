@@ -11,8 +11,8 @@ save.path <- "~/XXX/obj/"
 plot.path <- "~/XXX/plots/"
 
 ##Load endoderm object
-obj1 <- readRDS(paste0(file = "~/Box/zfext/annotations_celltype_curated_newMama/", sample, "/obj_seurat/", sample, "_seurat.rds"))
-markers <- readRDS(paste0(file = "~/Box/zfext/annotations_celltype_curated_newMama/", sample, "/obj_seurat/", sample, "_markers.rds"))
+obj1 <- readRDS(paste0(file = "~/file_avail_upon_request/", sample, "/obj_seurat/", sample, "_seurat.rds"))
+markers <- readRDS(paste0(file = "~/file_avail_upon_request/", sample, "/obj_seurat/", sample, "_markers.rds"))
 DimPlot(obj1, label = T)    
 DimPlot(obj1, group.by = "stage.nice")
 
@@ -563,8 +563,8 @@ saveRDS(gene.cascades, file = "./data/allGene.cascades.rds")
 
 
 ##Load the calcuted cascade object
-cascade.lm <- readRDS("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/cascades/meninges_LM_cascade.rds")
-cascade.fb <- readRDS("~/Box/Farrell Lab/Manuscripts/2023 Brant and Marina_meninges/URD_trajectory/cascades/meninges_mFB_cascade.rds")
+cascade.lm <- readRDS("~/file_avail_upon_request/meninges_LM_cascade.rds")
+cascade.fb <- readRDS("~/file_avail_upon_request/meninges_mFB_cascade.rds")
 
 ##Calculate cascades on commonly shared genes between the two populations
 casc.lm <- geneCascadeProcess(object = obj.tree, pseudotime='pseudotime', cells = cellsAlongLineage(obj.tree, c("3", "2"), remove.root=F), 
@@ -577,7 +577,7 @@ casc.lm <- geneCascadeProcess(object = obj.tree, pseudotime='pseudotime', cells 
 ##Plot the spline plots for differentially expressed transcription factors along the 2 lineages
 
 ##load the transcription factor list 
-tf.list <- read.delim(file="~/Box/zfext/02-Clustering/2021-03 Iterative Clustering/gene_info/tfs/2021-06-25_zebrafish_LTA_TFs.txt", header = T, sep = "")
+tf.list <- read.delim(file="~/file_avail_upon_request/2021-06-25_zebrafish_LTA_TFs.txt", header = T, sep = "")
 ##Get differentially expressed TFs for the EPDs
 genes <- rownames(cascade.lm$scaled.expression)
 epd.tfs <- genes[which(genes %in% tf.list$Symbol)]
